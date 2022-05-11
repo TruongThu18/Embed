@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/home.css">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="jquery.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+    <script src="xuly.js"></script>
+    <link rel="icon" href="images/logo.png" type="image/icon type">
+    <title>Dashboard</title>
+</head>
+<body>
+    <nav class="sidebar close">
+        <header>
+            <div class="image-text">
+                <span class="image">
+                    <img src="images/logo.png" alt="">
+                </span>
+                <div class="text logo-text">
+                    <span class="name">Smart Home</span>
+                    <span class="profession">Kita</span>
+                </div>
+            </div>
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+        <div class="menu-bar">
+            <div class="menu">
+                <li class="search-box">
+                    <i class='bx bx-search icon'></i>
+                    <input type="text" placeholder="Search...">
+                </li>
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="/">
+                            <i class='bx bx-home-alt icon'></i>
+                            <span class="text nav-text">Hệ Thống nhận dữ liệu & điều khiển </span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/history">
+                            <i class='bx bx-history icon'></i>
+                            <span class="text nav-text">History</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="bottom-content">
+                <li class="mode">
+                    <div class="sun-moon">
+                        <i class='bx bx-moon icon moon'></i>
+                        <i class='bx bx-sun icon sun'></i>
+                    </div>
+                    <span class="mode-text text">Dark mode</span>
+
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </div>
+        </div>
+    </nav>
+    <section class="home">
+        <div class="text">Dashboard</div>
+        <div class="dashboard">
+            <div class="l-dashboard">
+                <div class="devices-block">
+                    <div class="date-time" style="position:relative;" >
+                        <h1 id="time"></h1>
+                        <p> Welcome<br/> Have a good day</p>
+                    </div>
+                    <div class="control-devices">
+                        <div class="main-title">
+                            Devices
+                        </div>
+                        <div class="grid-container">
+                            <div style=" width: 30%;height:100%;float:center" id="light" class="element-block appliances turn-off" >
+                                <img class="devices-icon" src="images/lightbulb.png" alt="">
+                                
+                                <label class="switch">
+                                    <input type="checkbox" type="checkbox" name="" onclick="gardenLight()" id="gardenLight" />
+                                    <div class="slider slider--0">ON</div>
+                                    <div class="slider slider--1"></div>
+                                    <div class="slider slider--2"></div>
+                                    <div class="slider slider--3">OFF</div>
+                                </label>
+                                <div class="devices-text">
+                                    <p>Đèn</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div> 
+                </div>
+                
+                <figure witdh="800" height="350" class="highcharts-figure">
+                    <div id="container"></div>
+                </figure> 
+            </div>
+            <div class="r-dashboard">
+                <div class="temperature info">
+                    <div class="element-text">
+                        <img class="element-icon" src="images/temprature.png" alt="">
+                        <p class="right5px">Nhiệt độ: </p>
+                        <p id="currentTemp"></p>
+                        <p>°C</p>
+                    </div>
+                </div>
+                <div class="humidity info">
+                     <div class="element-text">
+                        <img class="element-icon" src="images/drop.png" alt="">
+                        <p style="text-align: left">Độ ẩm : <a id="currentHumi"></a>% <br/>Độ ẩm đất : <a id="currentSolid"></a>% </p>
+                    
+                    </div>
+                </div>
+                <div class="light info">
+                    <div class="element-text">
+                        <img class="element-icon" src="images/sunny.png" alt="">
+                        <p class="right5px">Độ sáng: </p>
+                        <p id="currentLight"></p>
+                        <p>Lux</p>
+                    </div>
+                </div>
+                <div class="warning info" id="warningSection">
+                    <div class="element-text">
+                        <img class="element-icon" src="images/bell.png" alt="">
+                        <p class="right5px" >Warning </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        const body = document.querySelector('body'),
+            sidebar = body.querySelector('nav'),
+            toggle = body.querySelector(".toggle"),
+            searchBtn = body.querySelector(".search-box"),
+            modeSwitch = body.querySelector(".toggle-switch"),
+            modeText = body.querySelector(".mode-text");
+        toggle.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+        })
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.remove("close");
+        })
+        modeSwitch.addEventListener("click", () => {
+            body.classList.toggle("dark");
+            if (body.classList.contains("dark")) {
+                modeText.innerText = "Light mode";
+            } else {
+                modeText.innerText = "Dark mode";
+            }
+        });
+
+
+    /* hightcharts */
+    var chart = Highcharts.chart('container',{
+
+        title: {
+          text: 'Đồ thị nhiệt độ - độ ẩm - ánh sáng.'
+        },
+      
+        yAxis: {
+          title: {
+           text: ''
+          }
+        },
+      
+        xAxis: [{
+            categories: [],
+            tickWidth: 1,
+            tickLength: 20
+        }],
+        legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'middle'
+        },
+      
+        plotOptions: {
+          series: {
+            label: {
+              connectorAllowed: false
+            },
+           pointStart: 0
+          }
+        },
+      
+        series: [{
+        type: 'column',
+          name: 'Độ ẩm(%)',
+          data: []
+        }, {
+          type:'column',
+          name:'Nhiệt độ(°C)',
+          data: []
+        }, {
+          type:'column',
+          name: 'Ánh sáng(lux)',
+          data: []
+        }],
+      
+        responsive: {
+          rules: [{
+            condition: {
+              maxWidth: 500
+            },
+            chartOptions: {
+              legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom'
+              }
+            }
+          }]
+        }
+        
+      
+      }); 
+      
+    socket.on("server-send-humi_graph", function (data) {
+        chart.series[0].setData(data);
+    });
+
+    socket.on("server-send-temp_graph", function (data) {
+        chart.series[1].setData(data);
+    });
+    socket.on("server-send-light_graph", function (data) {
+        chart.series[2].setData(data);
+     });
+
+    socket.on("server-send-date_graph", function (data) {
+        chart.xAxis[0].setCategories(data);
+    }); 
+    
+    // ------------- RTC ------------
+    var timeDisplay = document.getElementById("time");
+
+    function refreshTime() {
+        var dateString = new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+        var formattedString = dateString.replace(", ", " - ");
+        timeDisplay.innerHTML = formattedString;
+    }
+
+    setInterval(refreshTime, 1000);
+    </script>
+</body>
+</html>
